@@ -17,16 +17,23 @@
 # limitations under the License.
 #
 
+#Prep Server for Windows and IIS Services utilizing existing cookbooks that handle this.
 include_recipe 'windows'
 include_recipe 'iis'
+include_recipe 'iis::mod_application_initialization'
+include_recipe 'iis::aspnet'
+include_recipe 'iis::mod_aspnet45'
+include_recipe 'iis::mod_auth_anonymous'
+include_recipe 'iis::mod_iis6_metabase_compat'
+include_recipe 'iis::mod_isapi'
+include_recipe 'iis::mod_logging'
+include_recipe 'iis::mod_management'
+include_recipe 'iis::mod_security'
+include_recipe 'iis::mod_tracking'
 
-features = %w(
-  IIS-WebServerRole IIS-HttpRedirect IIS-LoggingLibraries IIS-RequestMonitor
-  IIS-HttpTracing IIS-ISAPIExtensions IIS-IIS6ManagementCompatibility
-  IIS-Metabase IIS-ISAPIFilter NetFx3ServerFeatures NetFx3
-  NetFx4Extended-ASPNET45 IIS-NetFxExtensibility45 IIS-ASPNET45
-  IIS-NetFxExtensibility IIS-HttpRedirect NetFx3ServerFeatures IIS-ASPNET
-  IIS-ApplicationDevelopment IIS-ApplicationInit)
+
+#Install additional features not covered in IIS Cookbook Recipes
+features = %w(IIS-HttpRedirect IIS-LoggingLibraries IIS-RequestMonitor IIS-ApplicationDevelopment)
 
 features.each do |feature|
   windows_feature feature do
@@ -34,6 +41,5 @@ features.each do |feature|
   end
 end
 
-iis_site 'Default Web Site' do
-  action [:stop, :delete]
-end
+#Remove Default Site
+include_recipe 'remove_default_site'
